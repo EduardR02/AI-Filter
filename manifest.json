@@ -1,0 +1,32 @@
+{
+	"name": "AI Filter",
+	"version": "1.0.0",
+	"manifest_version": 3,
+	"content_scripts": [
+		{
+			"matches": [
+				"*://*.reddit.com/*",
+				"*://*.youtube.com/*",
+				"*://*.twitter.com/*",
+				"*://*.x.com/*"
+			],
+			"js": [
+				"src/js/content.js"
+			]
+		}
+	],
+	"icons": {
+		"16": "src/icons/icon16.png",
+		"48": "src/icons/icon48.png",
+		"128": "src/icons/icon128.png"
+	},
+	"action": {
+		"default_icon": "src/icons/icon16.png",
+		"default_popup": "src/html/popup.html",
+		"default_title": "AI Filter"
+	},
+	"permissions": [
+		"storage"
+	],
+	"options_page": "src/html/settings.html"
+}
