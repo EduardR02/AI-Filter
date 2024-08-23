@@ -9,13 +9,83 @@ p {
   color: #ffffff;
 }
 
+.container {
+  display:flex;
+  flex-direction:column;
+  width:auto;
+  align-items:center;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.setting_container {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(auto, max-content) minmax(0, 1fr);
+  align-items:center;
+}
+
+.setting {
+  display: contents;
+}
+
+.setting-label {
+  text-align: left;
+  margin-right: 10px;
+  color: #ffffff;
+  margin-bottom: 20px;
+  margin-top: 10px;
+}
+
+.setting-input {
+  width:100%;
+  margin-bottom: 10px;
+}
+
+.small {
+  max-width: 100px;
+}
+
+.std-input {
+  padding: 10px;
+  box-sizing: border-box;
+  font-family: Consolas, Courier New, monospace;
+  border: 1px solid #abb2bf;
+  background-color: #21252b;
+  color: #ffffff;
+  resize: none;
+  height: auto;
+  overflow: hidden;
+}
+
+.std-input:focus {
+  outline: none;
+  border-color: #ef596f;
+}
+
+/* Chrome, Safari, Edge, Opera, removes arrows from number input*/
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+a:link {
+  color:#61afef;
+}
+
+a:visited {
+  color:#ef596f;
+}
+
 :root {
   --check-primary: #61afef;
   --check-secondary: #ef596f;
 }
 
 .button {
-  display: inline-block;
+  font-family: Consolas, Courier New, monospace;
   border-radius: 8px;
   position: relative;
   background: var(--check-primary, #61afef);
@@ -24,11 +94,11 @@ p {
   text-align: center;
   font-size: 16px;
   padding: 10px;
-  width: 200px;
+  width: auto;
   transition: all 0.1s;
   cursor: pointer;
-  margin: 5px;
   overflow: hidden;
+  margin-bottom: 10px;
 }
 
 .button span {
@@ -77,22 +147,13 @@ p {
 }
 
 .block_div {
-  float: left;
-  width: 100px;
-}
-
-.block_div_3 {
-  float: left;
-  width: 210px;
-}
-
-.block_div_2 {
-  margin-left: 105px;
-  width: 110px;
-}
-
-.quality_popup {
-  width: 100px;
+  width: 260px;
+  display: flex;
+  margin-left: auto;
+  box-sizing: border-box;
+  flex-direction: column;
+  margin: 0px;
+  padding: 5px;
 }
 
 .clearfix {
@@ -106,29 +167,3 @@ p {
 .no-bottom-margin {
   margin-bottom: 0;
 }
-
-.x {
-  background: var(--check-secondary, #ef596f);
-}
-
-.x:after {
-  background: var(--check-primary, #61afef);
-}
-
-.x span:after {
-  left: -20px;
-  right:auto;
-  content: '\00ab';
-}
-
-.x:hover span {
-  padding-right: 0;
-  padding-left: 25px;
-}
-
-.x:hover span:after {
-  left: 0;
-  right:auto;
-  opacity: 1;
-}
-

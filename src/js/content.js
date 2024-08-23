@@ -1,7 +1,3 @@
-const system_prompt = [{ role: "system", content: "" }];
-const threshold = 7;
-const api_key = "";
-const temperature = 0.7;
 const max_tokens = 4000;
 const postQueue = [];
 const POST_THRESHOLD = 5; // Make an API call every 5 new posts
@@ -9,6 +5,7 @@ const processedPosts = new Set();
 const postMap = new Map();
 const test_mode = false;
 const logging = false;
+let settings = {};
 
 
 init();
@@ -17,15 +14,53 @@ init();
 function init() {
     get_on_off(function (isOn) {
         if (init_on_off(isOn)) {
-            observe_change();
-            // Initial processing of existing content
-            const initialPosts = extractPostsFromNode(document);
-            if (initialPosts.length > 0) {
-                postQueue.push(...initialPosts);
-                processPosts();
-            }
+            init_settings()
+                .then(() => {
+                    observe_change();
+                    // Initial processing of existing content
+                    const initialPosts = extractPostsFromNode(document);
+                    if (initialPosts.length > 0) {
+                        postQueue.push(...initialPosts);
+                        processPosts();
+                    }
+                })
+                .catch(() => {
+                    console.log("Crucial value not set. Please visit the settings page to configure the extension.");
+                });
+
         }
     });
+}
+
+function init_settings() {
+    return new Promise((resolve, reject) => {
+        chrome.storage.local.get(['api_key', 'temperature', 'threshold', 'prompt'])
+            .then(res => {
+                settings = {
+                    api_key: res.api_key || "",
+                    temperature: res.temperature || 0.5,
+                    threshold: res.threshold || 7,
+                    prompt: res.prompt || ""
+                };
+                chrome.storage.onChanged.addListener(update_settings);
+                if (!settings.api_key || !settings.prompt) {
+                    reject(new Error("API key or prompt not set"));
+                } else {
+                    settings.prompt = [{ role: "system", content: settings.prompt }];
+                    resolve();
+                }
+            });
+    });
+}
+
+
+function update_settings(changes, namespace) {
+    if (namespace !== "local") return;
+    for (let [key, { newValue }] of Object.entries(changes)) {
+        if (key in settings && key !== "lifetime_tokens" && key !== "OnOffToggle") {
+            settings[key] = newValue;
+        }
+    }
 }
 
 
@@ -115,7 +150,7 @@ function api_call(content, posts) {
 
 
 function create_openai_request(content) {
-    const message = system_prompt.concat(content);
+    const message = settings.prompt.concat(content);
     const schema = {
         name: "filtered_content",
         strict: true,
@@ -148,13 +183,13 @@ function create_openai_request(content) {
         credentials: 'omit',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + api_key
+            'Authorization': 'Bearer ' + settings.api_key
         },
         body: JSON.stringify({
             model: "gpt-4o-mini",
             messages: message,
             max_tokens: max_tokens,
-            temperature: temperature,
+            temperature: settings.temperature,
             stream: false,
             response_format: { type: "json_schema", json_schema: {"name": "filtered_content", "schema": schema } }
         })
@@ -278,7 +313,7 @@ function get_response_data_no_stream(data) {
 
 
 function filterContent(element, score) {
-    if (score >= threshold) {
+    if (score >= settings.threshold) {
         if (!test_mode) {
             element.style.display = 'none'; // Remove the content
         } else {
@@ -309,7 +344,7 @@ function getTextNodes(node) {
 
 
 function get_on_off(callback) {
-    chrome.storage.sync.get('OnOffToggle', function (res) {
+    chrome.storage.local.get('OnOffToggle', function (res) {
         callback(res.OnOffToggle);
     });
 }
@@ -319,14 +354,14 @@ function init_on_off(isOn) {
     if (isOn === undefined) {
         // by default will be set to on
         isOn = true;
-        chrome.storage.sync.set({ OnOffToggle: isOn });
+        chrome.storage.local.set({ OnOffToggle: isOn });
     }
     return isOn;
 }
 
 
 function get_lifetime_tokens(callback) {
-    chrome.storage.sync.get(['lifetime_input_tokens', 'lifetime_output_tokens'], function(res) {
+    chrome.storage.local.get(['lifetime_input_tokens', 'lifetime_output_tokens'], function(res) {
         callback({
             input: res.lifetime_input_tokens || 0,
             output: res.lifetime_output_tokens || 0
@@ -337,7 +372,7 @@ function get_lifetime_tokens(callback) {
 
 function set_lifetime_tokens(newInputTokens, newOutputTokens) {
     get_lifetime_tokens(function(currentTokens) {
-        chrome.storage.sync.set({
+        chrome.storage.local.set({
             lifetime_input_tokens: currentTokens.input + newInputTokens,
             lifetime_output_tokens: currentTokens.output + newOutputTokens
         });

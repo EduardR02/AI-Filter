@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<link rel="stylesheet" type="text/css" href="../css/layout.css" >
+	<meta charset="UTF-8">
+	<title>Settings</title>
+</head>
+<body>
+    <div class="container">
+        <div class="setting_container">
+            <div class="setting">
+                <label for="api-key-input" class="setting-label">Your OpenAI API key:</label>
+                <input type="text" id="api-key-input" class="std-input setting-input" placeholder="Enter your API key here">
+            </div>
+            <div class="setting">
+                <label for="temperature" class="setting-label">Temperature:</label>
+                <input type="number" id="temperature" class="std-input small setting-input">
+            </div>
+            <div class="setting">
+                <label for="threshold" class="setting-label">Filter Threshold (1 - 10):</label>
+                <input type="number" id="threshold" class="std-input small setting-input">
+            </div>
+            <div class="setting">
+                <label for="customize-prompt" class="setting-label">Customize your prompt:</label>
+            </div>
+        </div>
+        <textarea type="text" id="customize-prompt" placeholder="Type your prompt here..." class="std-input setting-input"></textarea>
+        <button id="buttonSave" class="button"><span>Save </span></button>
+        <label class="setting-label">The prompt is very important for this so make sure to be very specific and clear, give examples etc.
+            Make sure to tell the model that it must assign each post a score from 1 to 10, based on how likely it is that it should be filtered.<br><br>
+            Refer to <a target="blank_" href=https://platform.openai.com/docs/api-reference/chat/create>OpenAI</a> Documentation on how to set these values. 
+            Provided values will not be checked for correctness. Don't forget to set the API-Key and Prompt.</label>
+    </div>
+	<div class="clearfix"></div>
+	<script type="module" src="../js/settings.js"></script>
+</body>
+</html>

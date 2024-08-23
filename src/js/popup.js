@@ -14,6 +14,11 @@ function run_on_init() {
 		return true;
 	});
 
+	let buttonSettings = document.getElementById("buttonSettings");
+	buttonSettings.addEventListener("click", function() {
+		chrome.runtime.openOptionsPage();
+	});
+
 	let tokensValue = document.getElementById("tokensValue");
     get_lifetime_tokens(function(res) {
         tokensValue.innerText = res.input + " | " + res.output;
@@ -50,19 +55,19 @@ function update_colors(isOn) {
 
 
 function toggle_on_off(callback) {
-	chrome.storage.sync.get('OnOffToggle', function(res) {
+	chrome.storage.local.get('OnOffToggle', function(res) {
 		console.log("res:",res);
 		let OnOff = res.OnOffToggle ? false : true;
 		console.log("OnOff:",OnOff);
 		callback(OnOff);
-		chrome.storage.sync.set({OnOffToggle: OnOff}, function() {
+		chrome.storage.local.set({OnOffToggle: OnOff}, function() {
 			console.log('OnOff is set to ' + OnOff);
 		});
 	});
 }
 
 function get_on_off(callback) {
-	chrome.storage.sync.get('OnOffToggle', function(res) {
+	chrome.storage.local.get('OnOffToggle', function(res) {
 		callback(res.OnOffToggle);
 		console.log('Value of OnOffToggle is ' + res.OnOffToggle);
 	});
